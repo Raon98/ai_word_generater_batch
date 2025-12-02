@@ -64,3 +64,11 @@
 ```yaml
 gpt:
   secretKey: ${GPT_SECRET_KEY} # 시스템 환경변수 설정 필요
+```
+
+## Result
+
+path : root/result/...json
+<img width="1801" height="772" alt="image" src="https://github.com/user-attachments/assets/ffd87719-1390-49d3-87a4-85e1cc95ad94" />
+<img width="984" height="239" alt="image" src="https://github.com/user-attachments/assets/3d06f584-fb57-4134-a3bd-ce0ff8138606" />
+
