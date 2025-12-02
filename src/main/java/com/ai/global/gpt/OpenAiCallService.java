@@ -35,7 +35,7 @@ public class OpenAiCallService {
         );
 
         ChatCompletionRequest chatRequest = ChatCompletionRequest.builder()
-                .model(request.getModel() != null ? request.getModel() : "gpt-3.5-turbo")
+                .model(request.getModel() != null ? request.getModel() : "gpt-4o-mini")
                 .messages(messages)
                 .temperature(0.7)
                 .build();
