@@ -65,10 +65,36 @@
 gpt:
   secretKey: ${GPT_SECRET_KEY} # 시스템 환경변수 설정 필요
 ```
+### 3. ⚡️ Execution Guide (Postman)
 
-📂 Result & Output
+서버를 실행하고 **Postman**을 사용하여 파일을 업로드하면 배치가 즉시 실행됩니다.
+
+**Step 1. 서버 실행 (Start Server)**
+* IntelliJ에서 `AiWordApplication`을 실행합니다 (Run).
+* 콘솔 로그에 아래 문구가 뜨면 준비 완료입니다.
+  > `✅ Started AiWordApplication in ... seconds`
+
+**Step 2. API 요청 설정 (Configure Request)**
+Postman을 열고 아래 순서대로 설정합니다.
+
+1.  **Method:** `POST`
+2.  **URL:** `http://localhost:8080/api/batch/upload`
+3.  **Body 설정:**
+    * 탭 메뉴에서 **[Body]** → **[form-data]** 선택
+    * **Key:** `file` 입력
+        * *(⚠️ 중요: Key 이름 위에 마우스를 올리고, 우측 드롭다운에서 **Text**를 **File**로 변경해야 합니다)*
+    * **Value:** `Select Files` 버튼을 눌러 **`n1.csv`** 파일 선택
+
+**Step 3. 전송 및 확인 (Send & Check)**
+* 우측 상단의 **[Send]** 버튼을 클릭합니다.
+* **결과:** `200 OK` 응답 확인 후, IntelliJ 콘솔에서 **실시간 배치 로그**를 모니터링하세요.
+
+
+
+## 📂 Result & Output
 배치 작업이 완료되면 결과 파일은 아래 경로에 자동으로 생성됩니다.
-📁 Directory Structure
+
+### 📁 Directory Structure
 ```bash
 root
 └── result
@@ -76,7 +102,7 @@ root
     └── error_words.txt             # ⚠️ 처리 실패한 단어 목록 (Skip Log)
 ```
 
-📸 Execution Screenshots
+### 📸 Execution Screenshots
 1. JSON Output Example
 <img src="https://github.com/user-attachments/assets/ffd87719-1390-49d3-87a4-85e1cc95ad94" width="100%" alt="JSON Output Screenshot">
 2. Batch Console Log
