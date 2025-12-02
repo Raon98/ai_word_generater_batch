@@ -1,0 +1,14 @@
+spring:
+  application:
+    name : ai_word
+  batch:
+    jdbc:
+      initialize-schema: always
+    servlet:
+      multipart:
+        max-file-size: 10MB
+        max-request-size: 10MB
+    job:
+      enabled: false
+gpt:
+  secretKey : ${GPT_SECRET_KEY}
