@@ -38,9 +38,10 @@ public class AnalysisJobConfig {
     private final FailureLogListener failureLogListener;
 
     @Bean
-    public Job analysisJob(JobRepository jobRepository, Step analysisStep) {
+    public Job analysisJob(JobRepository jobRepository, Step analysisStep,JobResultListener jobResultListener) {
         return new JobBuilder("analysisJob", jobRepository)
                 .start(analysisStep)
+                .listener(jobResultListener)
                 .build();
     }
 
@@ -91,7 +92,20 @@ public class AnalysisJobConfig {
     @Bean
     public ItemProcessor<AnalysisRequestDto, AnalysisResultDto> gptProcessor() {
         return item -> {
+            AnalysisResultDto result = gptAnalysisService.analyzeWord(item);
             log.info("[{}] Processing: {}", Thread.currentThread().getName(), item.getExpression());
+
+            boolean isFail =
+                    result == null ||
+                            result.getExampleJp() == null ||
+                            result.getMeaningKr().contains("GPT processing failed");
+
+            if (isFail) {
+                FailedWordsCollector.add(item);
+                return null;
+            }
+
+
             return gptAnalysisService.analyzeWord(item);
         };
     }
