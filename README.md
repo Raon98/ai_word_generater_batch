@@ -1,6 +1,6 @@
-## 🚀 3시간만에 만든 Keyword AI Example Generator
+## 🚀 키워드를 이용한 ai 예제 생성기
 
-> **Spring Batch**와 **OpenAI GPT-3.5 Turbo**를 활용하여 대용량 단어 데이터(Excel/CSV)를 분석하고,  
+> **Spring Batch**와 **OpenAI gpt-4o-mini **를 활용하여 대용량 단어 데이터(Excel/CSV)를 분석하고,  
 > 학습용 예문과 뜻을 생성하여 JSON으로 변환하는 **고성능 배치 프로그램**입니다.
 
 ---
@@ -24,7 +24,7 @@
 
 * **Java:** 17
 * **Framework:** Spring Boot 3.3.x, Spring Batch 5.x
-* **AI:** OpenAI API (test :`gpt-3.5-turbo`)
+* **AI:** OpenAI API (test :`gpt-4o-mini`)
 * **Library:**
     * **EasyExcel:** 대용량 엑셀 스트리밍 읽기 (메모리 최적화)
     * **Lombok:** 보일러플레이트 제거
