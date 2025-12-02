@@ -1,6 +1,6 @@
 ## 🚀 3시간만에 만든 Keyword AI Example Generator
 
-> **Spring Batch**와 **OpenAI GPT-4o-mini**를 활용하여 대용량 단어 데이터(Excel/CSV)를 분석하고,  
+> **Spring Batch**와 **OpenAI GPT-3.5 Turbo**를 활용하여 대용량 단어 데이터(Excel/CSV)를 분석하고,  
 > 학습용 예문과 뜻을 생성하여 JSON으로 변환하는 **고성능 배치 프로그램**입니다.
 
 ---
@@ -13,10 +13,10 @@
 | :--- | :--- | :--- | :--- |
 | **10건** | 약 4.7초 | **0.47초 / 건** | 초기 예열 포함 |
 | **100건** | 약 45.3초 | **0.45초 / 건** | 안정화 단계 |
-| **10,000건** | **18분 3.3초** | **0.108초 / 건** | **🚀 풀 퍼포먼스 (최적화)** |
+| **2700건** | **18분 3.3초** | **0.4초 / 건** | **🚀 풀 퍼포먼스 (최적화)** |
 
 * **측정 환경:** M1/M2 Mac, Local Server
-* **AI 모델:** GPT-4o-mini (Batch API 아님, 실시간 API 병렬 호출)
+* **AI 모델:** GPT-3.5 Turbo (Batch API 아님, 실시간 API 병렬 호출)
 
 ---
 
@@ -24,7 +24,7 @@
 
 * **Java:** 17
 * **Framework:** Spring Boot 3.3.x, Spring Batch 5.x
-* **AI:** OpenAI API (`gpt-4o-mini`)
+* **AI:** OpenAI API (test :`gpt-3.5-turbo`)
 * **Library:**
     * **EasyExcel:** 대용량 엑셀 스트리밍 읽기 (메모리 최적화)
     * **Lombok:** 보일러플레이트 제거
@@ -66,9 +66,18 @@ gpt:
   secretKey: ${GPT_SECRET_KEY} # 시스템 환경변수 설정 필요
 ```
 
-## Result
+📂 Result & Output
+배치 작업이 완료되면 결과 파일은 아래 경로에 자동으로 생성됩니다.
+📁 Directory Structure
+```bash
+root
+└── result
+    ├── keyword_data_a1b2c3d4.json  # ✅ 변환 완료된 결과 파일 (UUID 포함)
+    └── error_words.txt             # ⚠️ 처리 실패한 단어 목록 (Skip Log)
+```
 
-path : root/result/...json
-<img width="1801" height="772" alt="image" src="https://github.com/user-attachments/assets/ffd87719-1390-49d3-87a4-85e1cc95ad94" />
-<img width="984" height="239" alt="image" src="https://github.com/user-attachments/assets/3d06f584-fb57-4134-a3bd-ce0ff8138606" />
-
+📸 Execution Screenshots
+1. JSON Output Example
+<img src="https://github.com/user-attachments/assets/ffd87719-1390-49d3-87a4-85e1cc95ad94" width="100%" alt="JSON Output Screenshot">
+2. Batch Console Log
+<img src="https://github.com/user-attachments/assets/3d06f584-fb57-4134-a3bd-ce0ff8138606" width="100%" alt="Console Log Screenshot">
