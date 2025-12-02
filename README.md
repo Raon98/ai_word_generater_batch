@@ -1,4 +1,4 @@
-# 🚀 3시간만에 만든 AI 단어 예제 생성기 (AI Word Example Generator)
+## 🚀 3시간만에 만든 Keyword AI Example Generator
 
 > **Spring Batch**와 **OpenAI GPT-4o-mini**를 활용하여 대용량 단어 데이터(Excel/CSV)를 분석하고,  
 > 학습용 예문과 뜻을 생성하여 JSON으로 변환하는 **고성능 배치 프로그램**입니다.
