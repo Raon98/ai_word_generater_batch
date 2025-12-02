@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
@@ -42,14 +41,14 @@ public class AnalysisBatchService {
             long totalCount = countTotalRows(inputFilePath);
             log.info("총 데이터 개수 확인: {}건", totalCount);
 
-            String uuid = UUID.randomUUID().toString();
-            String outputFileName = "result_" + uuid + ".json";
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+            String outputFileName = "result_" + timestamp + ".json";
             String outputFilePath = System.getProperty("user.dir") + "/result/" + outputFileName;
 
             JobParameters params = new JobParametersBuilder()
                     .addString("filePath", inputFilePath)
                     .addString("outputPath", outputFilePath)
-                    .addString("runId", uuid)
+                    .addString("runId", timestamp)
                     .addLong("totalCount", totalCount)
                     .toJobParameters();
 
@@ -75,7 +74,8 @@ public class AnalysisBatchService {
     }
 
     private String saveFileToTemp(MultipartFile file) throws IOException {
-        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+        String fileName = timestamp + "_" + file.getOriginalFilename();
         String tempPath = System.getProperty("user.dir") + "/temp/" + fileName;
 
         File dest = new File(tempPath);

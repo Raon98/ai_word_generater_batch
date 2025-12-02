@@ -8,8 +8,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @Component
@@ -29,7 +30,7 @@ public class JobResultListener implements JobExecutionListener {
             return;
         }
 
-        String uuid = UUID.randomUUID().toString();
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
         String baseDir = System.getProperty("user.dir") + "/result";
         File dir = new File(baseDir);
         if (!dir.exists()) {
@@ -43,7 +44,7 @@ public class JobResultListener implements JobExecutionListener {
 
         log.info("실패 단어 {}개 저장 시작...", failed.size());
 
-        try (PrintWriter out = new PrintWriter(baseDir +"/"+uuid + "/failed_words.json")) {
+        try (PrintWriter out = new PrintWriter(baseDir +"/" +timestamp + "/failed_words.json")) {
             out.println("[");
             for (int i = 0; i < failed.size(); i++) {
                 AnalysisRequestDto f = failed.get(i);
