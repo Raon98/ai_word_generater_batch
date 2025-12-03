@@ -31,14 +31,14 @@ public class JobResultListener implements JobExecutionListener {
         }
 
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
-        String baseDir = System.getProperty("user.dir") + "/result";
+        String baseDir = System.getProperty("user.dir") + "/fail";
         File dir = new File(baseDir);
         if (!dir.exists()) {
             boolean created = dir.mkdirs();
             if (created) {
-                log.info("result 폴더가 없어 새로 생성했습니다: {}", baseDir);
+                log.info("fail 폴더가 없어 새로 생성했습니다: {}", baseDir);
             } else {
-                log.error("result 폴더 생성 실패: {}", baseDir);
+                log.error("fail 폴더 생성 실패: {}", baseDir);
             }
         }
 
