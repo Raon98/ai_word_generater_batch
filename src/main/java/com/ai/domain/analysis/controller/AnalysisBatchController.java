@@ -1,16 +1,17 @@
 package com.ai.domain.analysis.controller;
 
+import com.ai.domain.analysis.dto.BatchRequestDto;
 import com.ai.domain.analysis.dto.BatchResponseDto;
 import com.ai.domain.analysis.service.AnalysisBatchService;
 import com.ai.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -21,9 +22,9 @@ public class AnalysisBatchController {
     private final AnalysisBatchService analysisBatchService;
 
     @PostMapping("/upload")
-    public ResponseEntity<ApiResponse<BatchResponseDto>> runBatch(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<ApiResponse<BatchResponseDto>> runBatch(@ModelAttribute BatchRequestDto request) {
         try {
-            BatchResponseDto resultDto = analysisBatchService.runBatchJob(file);
+            BatchResponseDto resultDto = analysisBatchService.runBatchJob(request);
 
             return ResponseEntity.ok(ApiResponse.success("배치 분석이 성공적으로 완료되었습니다.", resultDto));
 
@@ -36,4 +37,13 @@ public class AnalysisBatchController {
                     .body(ApiResponse.fail("서버 내부 오류: " + e.getMessage()));
         }
     }
+
+    @GetMapping
+    public String healthy(@ModelAttribute BatchRequestDto request){
+                  log.info("err {}"+request);
+        if(request.getFile() ==null){
+            log.info("err {}"+request);
+        }
+        return "정상";
+    } 
 }
