@@ -80,7 +80,9 @@ public class AnalysisBatchService {
 
         File dest = new File(tempPath);
         if (!dest.getParentFile().exists()) {
-            dest.getParentFile().mkdirs();
+            if (!dest.getParentFile().mkdirs()) {
+                throw new IOException("디렉토리 생성 실패: " + dest.getParentFile().getAbsolutePath());
+            }
         }
         file.transferTo(dest);
 
