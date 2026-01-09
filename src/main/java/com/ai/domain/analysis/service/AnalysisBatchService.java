@@ -51,7 +51,7 @@ public class AnalysisBatchService {
             long totalCount = countTotalRows(finalFilePath);
             log.info("총 데이터 개수 확인: {}건", totalCount);
 
-            String outputFileName = "result_" + java.util.UUID.randomUUID().toString() + ".json";
+            String outputFileName = "result_" + System.currentTimeMillis() + ".json";
             String outputFilePath = System.getProperty("user.dir") + "/result/" + outputFileName;
 
             JobParameters params = new JobParametersBuilder()
