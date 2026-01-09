@@ -3,6 +3,8 @@ package com.ai.domain.analysis.batch;
 import com.ai.domain.analysis.dto.AnalysisRequestDto;
 import com.ai.domain.analysis.dto.AnalysisResultDto;
 import com.ai.domain.analysis.service.GptAnalysisService;
+import com.ai.global.utils.CsvToExcelConverter;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -11,7 +13,10 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.item.ItemStreamReader;
 import org.springframework.batch.item.json.JacksonJsonObjectMarshaller;
 import org.springframework.batch.item.json.JsonFileItemWriter;
 import org.springframework.batch.item.json.builder.JsonFileItemWriterBuilder;
@@ -49,7 +54,7 @@ public class AnalysisJobConfig {
     public Step analysisStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new StepBuilder("analysisStep", jobRepository)
                 .<AnalysisRequestDto, AnalysisResultDto>chunk(10, transactionManager)
-                .reader(synchronizedExcelReader(null))
+                .reader(dynamicReader(null,null))
                 .processor(gptProcessor())
                 .writer(synchronizedJsonWriter(null))
                 .taskExecutor(executor())
@@ -77,16 +82,27 @@ public class AnalysisJobConfig {
 
     @Bean
     @StepScope
-    public SynchronizedItemStreamReader<AnalysisRequestDto> synchronizedExcelReader(@Value("#{jobParameters['filePath']}") String filePath) {
+    public SynchronizedItemStreamReader<AnalysisRequestDto> dynamicReader(
+        @Value("#{jobParameters['filePath']}") String filePath,
+        @Value("#{jobParameters['fileType']}") String fileType
+    ) {
         if (filePath == null) {
             log.warn("JobParameter 'filePath' is null. Using default or empty reader.");
         }
-
-        EasyExcelItemReader reader = new EasyExcelItemReader(filePath);
+        
+        ItemStreamReader<AnalysisRequestDto> delegateReader;
+        if ("EXCEL".equalsIgnoreCase(fileType)) {
+            EasyExcelItemReader excelReader = new EasyExcelItemReader(filePath);
+            excelReader.open(new ExecutionContext());
+            delegateReader = excelReader;
+        } else {
+             throw new IllegalArgumentException("지원하지 않는 파일 타입입니다(지원 : CSV,EXCEL) : " + fileType);
+        }
 
         return new SynchronizedItemStreamReaderBuilder<AnalysisRequestDto>()
-                .delegate(reader)
+                .delegate(delegateReader)
                 .build();
+
     }
 
     @Bean
