@@ -24,6 +24,7 @@ public class GptAnalysisService {
 
         GptRequest request = GptRequest.builder()
                 .systemMsg(systemMsg)
+                .model("gpt-4o-mini")
                 .prompt(userMsg)
                 .build();
 

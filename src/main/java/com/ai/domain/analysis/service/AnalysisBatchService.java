@@ -1,6 +1,8 @@
 package com.ai.domain.analysis.service;
 
+import com.ai.domain.analysis.dto.BatchRequestDto;
 import com.ai.domain.analysis.dto.BatchResponseDto;
+import com.ai.global.utils.CsvToExcelConverter;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
@@ -16,9 +18,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
@@ -31,14 +35,20 @@ public class AnalysisBatchService {
     /**
      * 파일을 저장하고 배치를 실행하는 핵심 로직
      */
-    public BatchResponseDto runBatchJob(MultipartFile file) {
-        if (file.isEmpty()) throw new IllegalArgumentException("파일이 비어있습니다.");
-
+    public BatchResponseDto runBatchJob(BatchRequestDto request) {
+        if (request.getFile().isEmpty()) throw new IllegalArgumentException("파일이 비어있습니다.");
+        if (request.getFileType().isEmpty()) throw new IllegalArgumentException("지원하지않는 파일 타입입니다 (지원 : CSV,EXCEL) : " + request.getFileType());
         try {
 
-            String inputFilePath = saveFileToTemp(file);
+            String inputFilePath = saveFileToTemp(request.getFile());
+            String finalFilePath = inputFilePath;
+            String jobFileType = "EXCEL";
 
-            long totalCount = countTotalRows(inputFilePath);
+            if(request.getFileType().equals("CSV") || inputFilePath.endsWith(".csv")){
+                finalFilePath = CsvToExcelConverter.convertCsvToExcel(inputFilePath);
+            }
+
+            long totalCount = countTotalRows(finalFilePath);
             log.info("총 데이터 개수 확인: {}건", totalCount);
 
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
@@ -46,9 +56,10 @@ public class AnalysisBatchService {
             String outputFilePath = System.getProperty("user.dir") + "/result/" + outputFileName;
 
             JobParameters params = new JobParametersBuilder()
-                    .addString("filePath", inputFilePath)
+                    .addString("filePath", finalFilePath)
                     .addString("outputPath", outputFilePath)
                     .addString("runId", timestamp)
+                    .addString("fileType",jobFileType)
                     .addLong("totalCount", totalCount)
                     .toJobParameters();
 
@@ -63,15 +74,34 @@ public class AnalysisBatchService {
     }
 
     private long countTotalRows(String filePath) {
-        AtomicLong count = new AtomicLong();
-        EasyExcel.read(filePath, new AnalysisEventListener<Object>() {
-            @Override public void invoke(Object data, AnalysisContext context) {}
-            @Override public void doAfterAllAnalysed(AnalysisContext context) {
-                count.set(context.readRowHolder().getRowIndex());
+    AtomicLong count = new AtomicLong(0);
+    EasyExcel.read(filePath, new AnalysisEventListener<Map<Integer,String>>() {
+        @Override
+        public void invoke(Map<Integer,String> data , AnalysisContext context) {
+            if(data ==null || data.isEmpty()){
+                return;
             }
-        }).sheet().doRead();
-        return count.get();
-    }
+            boolean hasRealContent = false;
+            for (String v : data.values()){
+                if(v != null && !v.trim().isEmpty()){
+                    hasRealContent = true;
+                    break;
+                }
+            }
+            if(hasRealContent){
+                count.incrementAndGet(); 
+            }
+        }
+
+        @Override
+        public void doAfterAllAnalysed(AnalysisContext context) {}
+    })
+    .sheet()
+    .headRowNumber(1) 
+    .doRead();
+
+    return count.get();
+}
 
     private String saveFileToTemp(MultipartFile file) throws IOException {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
