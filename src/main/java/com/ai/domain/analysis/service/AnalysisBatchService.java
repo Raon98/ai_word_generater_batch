@@ -111,6 +111,7 @@ public class AnalysisBatchService {
         File dest = new File(tempPath);
         if (!dest.getParentFile().exists()) {
             if (!dest.getParentFile().mkdirs()) {
+                log.error("디렉토리 생성 실패: {}", dest.getParentFile().getAbsolutePath());
                 throw new IOException("디렉토리 생성 실패: " + dest.getParentFile().getAbsolutePath());
             }
         }

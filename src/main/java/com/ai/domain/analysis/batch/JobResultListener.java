@@ -39,7 +39,7 @@ public class JobResultListener implements JobExecutionListener {
                 log.info("fail 폴더가 없어 새로 생성했습니다: {}", baseDir);
             } else {
                 log.error("result 폴더 생성 실패: {}", baseDir);
-                return; // 추가된 예외 처리
+                throw new RuntimeException("디렉토리 생성 실패: " + baseDir); // 예외 처리 추가
             }
         }
 
