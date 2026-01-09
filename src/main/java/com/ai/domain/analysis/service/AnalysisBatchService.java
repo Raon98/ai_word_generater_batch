@@ -41,14 +41,13 @@ public class AnalysisBatchService {
             long totalCount = countTotalRows(inputFilePath);
             log.info("총 데이터 개수 확인: {}건", totalCount);
 
-            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
-            String outputFileName = "result_" + timestamp + ".json";
+            String outputFileName = "result_" + java.util.UUID.randomUUID().toString() + ".json";
             String outputFilePath = System.getProperty("user.dir") + "/result/" + outputFileName;
 
             JobParameters params = new JobParametersBuilder()
                     .addString("filePath", inputFilePath)
                     .addString("outputPath", outputFilePath)
-                    .addString("runId", timestamp)
+                    .addString("runId", java.util.UUID.randomUUID().toString())
                     .addLong("totalCount", totalCount)
                     .toJobParameters();
 
@@ -74,13 +73,14 @@ public class AnalysisBatchService {
     }
 
     private String saveFileToTemp(MultipartFile file) throws IOException {
-        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
-        String fileName = timestamp + "_" + file.getOriginalFilename();
+        String fileName = java.util.UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
         String tempPath = System.getProperty("user.dir") + "/temp/" + fileName;
 
         File dest = new File(tempPath);
         if (!dest.getParentFile().exists()) {
-            dest.getParentFile().mkdirs();
+            if (!dest.getParentFile().mkdirs()) {
+                throw new IOException("디렉토리 생성 실패: " + dest.getParentFile().getAbsolutePath());
+            }
         }
         file.transferTo(dest);
 

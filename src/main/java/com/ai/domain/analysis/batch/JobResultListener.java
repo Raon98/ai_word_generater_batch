@@ -39,12 +39,13 @@ public class JobResultListener implements JobExecutionListener {
                 log.info("result 폴더가 없어 새로 생성했습니다: {}", baseDir);
             } else {
                 log.error("result 폴더 생성 실패: {}", baseDir);
+                return; // Add return to prevent further execution if directory creation fails
             }
         }
 
         log.info("실패 단어 {}개 저장 시작...", failed.size());
 
-        try (PrintWriter out = new PrintWriter(baseDir +"/" +timestamp + "/failed_words.json")) {
+        try (PrintWriter out = new PrintWriter(baseDir + "/" + timestamp + "/failed_words.json")) {
             out.println("[");
             for (int i = 0; i < failed.size(); i++) {
                 AnalysisRequestDto f = failed.get(i);
